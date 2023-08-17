@@ -2,7 +2,11 @@
 use rand::Rng;
 
 mod user_choice;
-use user_choice::{Choice, get_user_choice};
+use user_choice::{Choice, UserChoice, GoLeft, GoRight, get_user_choice};
+
+fn execute_choice<T: UserChoice>(user_choice: T, roll: u8, lives: i8) -> i8 {
+    return user_choice.execute(roll, lives);
+}
 
 fn main() {
     println!("#### Welcome to the dungeon! ####\n#### This is a simple text based game ####\n#### follow the prompts to play! ####");
@@ -20,38 +24,18 @@ fn main() {
 
         // This is where the enum is evaluted and acted on.
         match choice {
-            Choice::GoLeft => {
-                if roll < 3 {
-                    println!("You go left and find a treasure chest and gain one life!");
-                    lives += 1;
-                } else if roll > 3 && roll <= 7 {
-                    println!("You go left and find a dead end.");
-                } else {
-                    if lives > 0 {
-                        println!("You go left and meet a terrible monster and lose a life!");
-                        lives -= 1;
-                    } else {
-                        println!("You go left and meet a terrible monster and lose a life!");
-                        print!("You are out of lives. Good bye!");
-                        break;
-                    }
+            Choice::Left => {
+                lives = execute_choice(GoLeft{}, roll, lives);
+                if lives <= 0 {
+                    print!("You are out of lives. Good bye!");
+                    break;
                 }
             }
-            Choice::GoRight => {
-                if roll > 7 {
-                    println!("You go right and find a treasure chest and gain one life!");
-                    lives += 1;
-                } else if roll < 7 && roll >= 3 {
-                    println!("You go right and find a dead end.");
-                } else {
-                    if lives > 0 {
-                        println!("You go right and meet a terrible monster and lose a life!");
-                        lives -= 1;
-                    } else {
-                        println!("You go right and meet a terrible monster and lose a life!");
-                        print!("You are out of lives. Good bye!");
-                        break;
-                    }
+            Choice::Right => {
+                lives = execute_choice(GoRight{}, roll, lives);
+                if lives <= 0 {
+                    print!("You are out of lives. Good bye!");
+                    break;
                 }
             }
             Choice::Invalid => {
